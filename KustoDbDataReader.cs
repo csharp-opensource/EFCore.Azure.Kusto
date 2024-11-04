@@ -1,6 +1,7 @@
+using System;
 using System.Collections;
+using System.Data;
 using System.Data.Common;
-using Microsoft.Azure.Kusto.Data.Common;
 
 namespace EFCore.Azure.Kusto
 {

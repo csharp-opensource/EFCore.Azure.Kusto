@@ -29,7 +29,7 @@ namespace EFCore.Azure.Kusto
 
         public override int ExecuteNonQuery()
         {
-            var result = _queryProvider.ExecuteControlCommand(CommandText);
+            var result = _queryProvider.ExecuteQuery(CommandText);
             return result.Status == "Success" ? 1 : 0;
         }
 
