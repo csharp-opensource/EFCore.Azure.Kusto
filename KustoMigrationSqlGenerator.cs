@@ -11,7 +11,6 @@ namespace EFCore.Azure.Kusto
         {
         }
 
-
         protected override void Generate(CreateTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate = true)
         {
             builder.Append("CREATE TABLE ")

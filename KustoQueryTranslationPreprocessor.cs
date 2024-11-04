@@ -11,8 +11,8 @@ namespace EFCore.Azure.Kusto
 
         public override Expression Process(Expression query)
         {
-            // Implement translation logic here
-            // Example: Translate LINQ expressions to Kusto Query Language (KQL)
+            // Translate LINQ expressions to Kusto Query Language (KQL)
+            // This is a placeholder implementation and should be replaced with actual translation logic
             return base.Process(query);
         }
     }

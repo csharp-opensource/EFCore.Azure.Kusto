@@ -1,10 +1,18 @@
 ﻿using System.Data;
 using System.Data.Common;
+using Kusto.Data.Common;
 
 namespace EFCore.Azure.Kusto
 {
     public class KustoDbCommand : DbCommand
     {
+        private readonly ICslQueryProvider _queryProvider;
+
+        public KustoDbCommand(ICslQueryProvider queryProvider)
+        {
+            _queryProvider = queryProvider;
+        }
+
         public override string CommandText { get; set; }
         public override int CommandTimeout { get; set; }
         public override CommandType CommandType { get; set; }
@@ -16,32 +24,33 @@ namespace EFCore.Azure.Kusto
 
         public override void Cancel()
         {
-            // Implement cancel logic
+            // Cancel the command
         }
 
         public override int ExecuteNonQuery()
         {
-            // Implement execute non-query logic
-            return 0;
+            var result = _queryProvider.ExecuteControlCommand(CommandText);
+            return result.Status == "Success" ? 1 : 0;
         }
 
         public override object ExecuteScalar()
         {
-            // Implement execute scalar logic
-            return null;
+            var result = _queryProvider.ExecuteQuery(CommandText);
+            return result.PrimaryResults.FirstOrDefault()?.Rows.FirstOrDefault()?.Values.FirstOrDefault();
         }
 
         public override void Prepare()
         {
-            // Implement prepare logic
+            // Prepare the command
         }
 
         protected override DbParameter CreateDbParameter() => new KustoDbParameter();
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            // Implement execute reader logic
-            return new KustoDbDataReader();
+            // Execute the command and return a data reader
+            var result = _queryProvider.ExecuteQuery(CommandText);
+            return new KustoDbDataReader(result);
         }
     }
 }

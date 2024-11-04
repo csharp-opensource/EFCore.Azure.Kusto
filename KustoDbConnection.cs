@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
+using Kusto.Data;
+using Kusto.Data.Common;
+using Kusto.Data.Net.Client;
 
 namespace EFCore.Azure.Kusto
 {
     public class KustoDbConnection : DbConnection
     {
-        public override string ConnectionString { get; set; }
+        private KustoConnectionStringBuilder _connectionStringBuilder;
+        private ICslQueryProvider _queryProvider;
 
-        public override string Database => "KustoDatabase"; // Replace with actual database name
+        public override string ConnectionString
+        {
+            get => _connectionStringBuilder?.ToString();
+            set => _connectionStringBuilder = new KustoConnectionStringBuilder(value);
+        }
 
-        public override string DataSource => "KustoDataSource"; // Replace with actual data source
+        public override string Database => _connectionStringBuilder.InitialCatalog;
+
+        public override string DataSource => _connectionStringBuilder.DataSource;
 
         public override string ServerVersion => "1.0"; // Replace with actual server version
 
-        public override ConnectionState State { get; protected set; } = ConnectionState.Closed;
+        private ConnectionState _state;
+        public override ConnectionState State => _state;
 
         public override void ChangeDatabase(string databaseName)
         {
@@ -23,14 +34,16 @@ namespace EFCore.Azure.Kusto
 
         public override void Close()
         {
-            // Implement close logic
-            State = ConnectionState.Closed;
+            // Close the connection
+            _queryProvider.Dispose();
+            _state = ConnectionState.Closed;
         }
 
         public override void Open()
         {
-            // Implement open logic
-            State = ConnectionState.Open;
+            // Open the connection
+            _queryProvider = KustoClientFactory.CreateCslQueryProvider(_connectionStringBuilder);
+            _state = ConnectionState.Open;
         }
 
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
@@ -40,7 +53,7 @@ namespace EFCore.Azure.Kusto
 
         protected override DbCommand CreateDbCommand()
         {
-            return new KustoDbCommand();
+            return new KustoDbCommand(_queryProvider);
         }
     }
 }
