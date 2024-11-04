@@ -11,9 +11,9 @@ namespace EFCore.Azure.Kusto
         {
         }
 
-        protected override void Generate(CreateTableOperation operation, IModel model, MigrationCommandListBuilder builder)
+
+        protected override void Generate(CreateTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate = true)
         {
-            // Implement SQL generation logic for creating a table
             builder.Append("CREATE TABLE ")
                    .Append(operation.Name)
                    .AppendLine(" (");
@@ -31,7 +31,7 @@ namespace EFCore.Azure.Kusto
         }
 
         // Implement other SQL generation methods as needed
-        protected override void Generate(DropTableOperation operation, IModel model, MigrationCommandListBuilder builder)
+        protected override void Generate(DropTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate = true)
         {
             builder.Append("DROP TABLE ")
                    .Append(operation.Name)
