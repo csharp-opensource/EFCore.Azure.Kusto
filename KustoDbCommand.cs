@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using System.Data.Common;
 using Kusto.Data.Common;
+using System.Linq;
+using System;
 
 namespace EFCore.Azure.Kusto
 {
@@ -25,18 +27,32 @@ namespace EFCore.Azure.Kusto
         public override void Cancel()
         {
             // Cancel the command
+            // Note: Kusto doesn't support canceling queries directly, so this might be a no-op
         }
 
         public override int ExecuteNonQuery()
         {
             var result = _queryProvider.ExecuteQuery(CommandText);
-            return result.Status == "Success" ? 1 : 0;
+            if (result == null)
+            {
+                throw new InvalidOperationException("Query execution did not return a valid IDataReader.");
+            }
+            var table = new DataTable();
+            table.Load(result);
+            return table.Rows.Count;
         }
 
         public override object ExecuteScalar()
         {
             var result = _queryProvider.ExecuteQuery(CommandText);
-            return result.PrimaryResults.FirstOrDefault()?.Rows.FirstOrDefault()?.Values.FirstOrDefault();
+            if (result == null)
+            {
+                throw new InvalidOperationException("Query execution did not return a valid IDataReader.");
+            }
+            var table = new DataTable();
+            table.Load(result);
+            var firstRow = table.Rows.Cast<DataRow>().FirstOrDefault();
+            return firstRow != null ? firstRow[0] : null;
         }
 
         public override void Prepare()
