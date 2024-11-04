@@ -16,6 +16,7 @@ namespace EFCore.Azure.Kusto
 
         public override void ResetDbType()
         {
+            DbType = DbType.String; // Default to string or any other default type
         }
     }
 }

@@ -8,6 +8,7 @@ namespace EFCore.Azure.Kusto
         public KustoConnection(RelationalConnectionDependencies dependencies) : base(dependencies)
         {
         }
+
         protected override DbConnection CreateDbConnection()
         {
             return new KustoDbConnection();

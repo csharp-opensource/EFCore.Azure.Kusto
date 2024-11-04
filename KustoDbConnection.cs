@@ -8,13 +8,13 @@ namespace EFCore.Azure.Kusto
     {
         public override string ConnectionString { get; set; }
 
-        public override string Database => throw new NotImplementedException();
+        public override string Database => "KustoDatabase"; // Replace with actual database name
 
-        public override string DataSource => throw new NotImplementedException();
+        public override string DataSource => "KustoDataSource"; // Replace with actual data source
 
-        public override string ServerVersion => throw new NotImplementedException();
+        public override string ServerVersion => "1.0"; // Replace with actual server version
 
-        public override ConnectionState State => throw new NotImplementedException();
+        public override ConnectionState State { get; protected set; } = ConnectionState.Closed;
 
         public override void ChangeDatabase(string databaseName)
         {
@@ -23,12 +23,14 @@ namespace EFCore.Azure.Kusto
 
         public override void Close()
         {
-            throw new NotImplementedException();
+            // Implement close logic
+            State = ConnectionState.Closed;
         }
 
         public override void Open()
         {
-            throw new NotImplementedException();
+            // Implement open logic
+            State = ConnectionState.Open;
         }
 
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
@@ -38,7 +40,7 @@ namespace EFCore.Azure.Kusto
 
         protected override DbCommand CreateDbCommand()
         {
-            throw new NotImplementedException();
+            return new KustoDbCommand();
         }
     }
 }
